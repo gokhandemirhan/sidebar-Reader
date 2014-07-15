@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html ng-app='App'>
+<head>
+	<title></title>
+
+	<!-- LIBRARIES -->
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js'></script>
+	<script src='lib/angular.min.js'></script>
+	<script src="lib/bootstrap.min.js"></script>
+
+	<!-- STYLE / THEME -->
+	<link href="css/bootstrap/bootstrap.css" rel="stylesheet">
+  <link href="css/bootflat.css" rel="stylesheet">
+  <link href="css/app.css" rel="stylesheet">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <!-- THIS APP. -->
+  <script src='js/app.js'></script>
+  <script type="text/javascript">
+var buffer = 20; //scroll bar buffer
+var iframe = $('#post-content');
+
+function pageY(elem) {
+  return elem.offsetParent ? (elem.offsetTop + pageY(elem.offsetParent)) : elem.offsetTop;
+}
+
+function resizeIframe() {
+  var height = document.documentElement.clientHeight;
+  height -= pageY(document.getElementById('post-content'))+ buffer ;
+  height = (height < 0) ? 0 : height;
+  document.getElementById('post-content').style.height = height + 'px';
+  document.getElementById('leftbar').style.height = height + 'px';
+}
+
+// .onload doesn't work with IE8 and older.
+if (iframe.attachEvent) {
+  iframe.attachEvent("onload", resizeIframe);
+} else {
+  iframe.onload=resizeIframe;
+}
+
+window.onresize = resizeIframe;
+window.onload = resizeIframe;
+</script>
+</head>
+
+<body>
+  <div class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Sidebar.io with Angular JS</a>
+      </div>
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+        <p class="navbar-text pull-right">A project by <a href="http://gokhandemirhan.com" target="_blank">Gokhan Demirhan</a></p>
+      </div>
+    </div>
+  </div>
+  <div ng-controller='FeedController as feedctrl'>
+    <div class="col-sm-4" id="leftbar">
+      <ul class="list-unstyled">  
+        <li ng-repeat="feed in feeds" class="post">
+          <a class="number">{{$index + 1}}</a>
+          <a href="#" ng-click="feedctrl.setPostUrl(feed.link)">
+            <div class="post-content">
+              <h6 class="list-group-item-heading">{{feed.title | addEllipsis}}</h6>
+              <p class="list-group-item-text">{{feed.author}} - {{feed.publishedDate | date:'MM/dd/yyyy @ h:mma'}}</p>
+              <div class="pull-right icons">
+                <a href="{{feed.content | unsafe}}" target="_blank"><i class="fa fa-comments-o"></i></a>
+                <a href="{{feed.link}}" target="_blank"><i class="fa fa-external-link"></i></a>
+              </div>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="col-sm-8">
+      <span class="no-selected" ng-hide="selected">No link selected.</span>
+      <iframe id="post-content" type="text/html" allowfullscreen frameborder="0" ng-src="{{currentPostUrl}}" style="" height="100%" width="100%">
+      </iframe>
+    </div>
+  </div>
+</body>
+</html>
